@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400..700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r126/three.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/three@0.126.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://unpkg.com/three@0.126.0/examples/jsm/webxr/ARButton.js"></script>
     <style>
         body {
             margin: 0;
@@ -76,58 +78,73 @@
     <img id="image" src="hdm_logo_weiß.png">
 </div>
 <script type="module">
-        import { ARButton } from 'https://unpkg.com/three@0.126.0/examples/jsm/webxr/ARButton.js';
-        let camera, scene, renderer;
-        init();
-        initAR(); // Kein Laden von Texturen mehr
-        function init() {
-            const container = document.createElement('div');
-            document.body.appendChild(container);
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 40);
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-            renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.xr.enabled = true;
-            container.appendChild(renderer.domElement);
-            var light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
-            light.position.set(0.5, 1, 0.25);
-            scene.add(light);
-            window.addEventListener('resize', onWindowResize, false);
-        }
+    let camera, scene, renderer, model;
 
-        function initAR() {
-            // Einfache AR Szene mit einem Würfel
-            const geometry = new THREE.BoxGeometry( 1, 1, 1 ); 
-            const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} ); 
-            const cube = new THREE.Mesh( geometry, material ); 
-            scene.add( cube );
-            var arButton = ARButton.createButton(renderer);
-            arButton.style.zIndex = '1000';
-            document.getElementById("arButton").appendChild(arButton);
-            stopLoading();
-            animate();
-        }
+    init();
+    initAR(); // Kein Laden von Texturen mehr
 
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
+    function init() {
+        const container = document.createElement('div');
+        document.body.appendChild(container);
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 40);
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.xr.enabled = true;
+        container.appendChild(renderer.domElement);
 
-        function animate() {
-            renderer.setAnimationLoop(render);
-        }
+        var light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+        light.position.set(0.5, 1, 0.25);
+        scene.add(light);
 
-        function render() {
-            renderer.render(scene, camera);
-        }
+        window.addEventListener('resize', onWindowResize, false);
+    }
 
-        function stopLoading() {
-            var spinner = document.getElementById("spinner");
-            spinner.classList.remove("spinner");
-            spinner.style.borderTopColor = "transparent";
+    function initAR() {
+        // Lade das 3D-Modell und ersetze den Würfel
+        const loader = new THREE.GLTFLoader();
+        loader.load('https://threejs.org/examples/models/gltf/robot/Robot.glb', function(gltf) {
+            model = gltf.scene;
+            model.scale.set(0.1, 0.1, 0.1); // Skaliere das Modell nach Bedarf
+            model.position.set(0, -0.5, -1); // Positioniere es vor der Kamera
+            scene.add(model);
+        }, undefined, function(error) {
+            console.error(error);
+        });
+
+        // AR-Button hinzufügen
+        var arButton = ARButton.createButton(renderer);
+        arButton.style.zIndex = '1000';
+        document.getElementById("arButton").appendChild(arButton);
+
+        stopLoading();
+        animate();
+    }
+
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function animate() {
+        renderer.setAnimationLoop(render);
+    }
+
+    function render() {
+        if (model) {
+            // Animationen des Modells (falls vorhanden) können hier aktualisiert werden
         }
-    </script>
+        renderer.render(scene, camera);
+    }
+
+    function stopLoading() {
+        var spinner = document.getElementById("spinner");
+        spinner.classList.remove("spinner");
+        spinner.style.borderTopColor = "transparent";
+    }
+</script>
 </body>
 </html>
+
