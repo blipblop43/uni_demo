@@ -77,7 +77,7 @@
 </div>
 <script type="module">
     import { ARButton } from 'https://unpkg.com/three@0.126.0/examples/jsm/webxr/ARButton.js';
-    let camera, scene, renderer, cube4;
+    let camera, scene, renderer;
     init();
     initAR(); // Kein Laden von Texturen mehr
 
@@ -109,9 +109,12 @@
         // Erstelle 3 Würfel mit diffusem Material und Schattierung
         const geometry = new THREE.BoxGeometry(1, 1, 1);
 
-        // Diffuses Material ohne Textur
+        // Diffuses Material mit Textur (zum Beispiel eine einfache Textur)
+        const textureLoader = new THREE.TextureLoader();
+        const texture = textureLoader.load('path_to_your_texture.jpg'); // Deine Texturdatei hier angeben
         const material = new THREE.MeshLambertMaterial({
             color: 0x00ff00,   // Würfel Farbe
+            map: texture,      // Textur hinzufügen
             flatShading: true   // Flache Schattierung verwenden
         });
 
@@ -130,15 +133,6 @@
         cube3.position.set(0, -2, -4); // Positioniere den dritten Würfel
         scene.add(cube3);
 
-        // Erstelle einen vierten Würfel in dunkelrot, der sich dreht
-        const material4 = new THREE.MeshLambertMaterial({
-            color: 0x8B0000,   // Dunkelrote Farbe
-            flatShading: true   // Flache Schattierung verwenden
-        });
-        cube4 = new THREE.Mesh(geometry, material4);
-        cube4.position.set(2, 2, -5); // Positioniere den vierten Würfel
-        scene.add(cube4);
-
         var arButton = ARButton.createButton(renderer);
         arButton.style.zIndex = '1000';
         document.getElementById("arButton").appendChild(arButton);
@@ -154,12 +148,6 @@
 
     function animate() {
         renderer.setAnimationLoop(render);
-
-        // Drehung des vierten Würfels um die eigene Achse
-        if (cube4) {
-            cube4.rotation.x += 0.01;
-            cube4.rotation.y += 0.01;
-        }
     }
 
     function render() {
@@ -174,5 +162,4 @@
 </script>
 </body>
 </html>
-
 
