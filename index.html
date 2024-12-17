@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Schulkooperationen in AR</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400..700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r126/three.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            margin: 0;
+        }
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgb(32, 32, 32);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        #titleText {
+            font-size: 7vw;
+            color: white;
+            font-family: 'Kode Mono', monospace;
+            text-align: center;
+            margin: -60% 10px 0;
+        }
+        #image {
+            position: absolute;
+            top: 90%;
+            left: 50%;
+            width: 60%;
+            transform: translate(-50%, -50%);
+        }
+        #arButton {
+            position: absolute;
+            color: white;
+            top: 55%;
+            height: 10%;
+            width: 300px;
+            font-family: 'Kode Mono', monospace;
+            z-index: 1000;
+        }
+        .spinner {
+            position: absolute;
+            top: 55%;
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+<div id="overlay">
+    <div id="titleText">
+        <span>MOBILE MEDIEN</span>
+        <br>
+        <span style="color: #e61919;">Eine interaktive AR Ausstellung</span>
+    </div>
+    <div id="arButton"></div>
+    <div class="spinner" id="spinner"></div>
+    <img id="image" src="hdm_logo_weiß.png">
+</div>
+<script type="module">
+        import { ARButton } from 'https://unpkg.com/three@0.126.0/examples/jsm/webxr/ARButton.js';
+        let camera, scene, renderer;
+        init();
+        initAR(); // Kein Laden von Texturen mehr
+        function init() {
+            const container = document.createElement('div');
+            document.body.appendChild(container);
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 40);
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.xr.enabled = true;
+            container.appendChild(renderer.domElement);
+            var light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+            light.position.set(0.5, 1, 0.25);
+            scene.add(light);
+            window.addEventListener('resize', onWindowResize, false);
+        }
+
+        function initAR() {
+            // Einfache AR Szene mit einem Würfel
+            const geometry = new THREE.BoxGeometry( 1, 1, 1 ); 
+            const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} ); 
+            const cube = new THREE.Mesh( geometry, material ); 
+            scene.add( cube );
+            var arButton = ARButton.createButton(renderer);
+            arButton.style.zIndex = '1000';
+            document.getElementById("arButton").appendChild(arButton);
+            stopLoading();
+            animate();
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate() {
+            renderer.setAnimationLoop(render);
+        }
+
+        function render() {
+            renderer.render(scene, camera);
+        }
+
+        function stopLoading() {
+            var spinner = document.getElementById("spinner");
+            spinner.classList.remove("spinner");
+            spinner.style.borderTopColor = "transparent";
+        }
+    </script>
+</body>
+</html>
