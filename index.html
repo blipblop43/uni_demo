@@ -91,16 +91,32 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.xr.enabled = true;
         container.appendChild(renderer.domElement);
+        
+        // Lichtquelle für Schattierungen
         var light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
         light.position.set(0.5, 1, 0.25);
         scene.add(light);
+
+        // Lichtquelle für stärkere Schattierungen
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(10, 10, 10).normalize();
+        scene.add(directionalLight);
+        
         window.addEventListener('resize', onWindowResize, false);
     }
 
     function initAR() {
-        // Erstelle 3 Würfel, die um die Kamera verteilt sind
-        const geometry = new THREE.BoxGeometry(1, 1, 1); 
-        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        // Erstelle 3 Würfel mit diffusem Material und Schattierung
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+
+        // Diffuses Material mit Textur (zum Beispiel eine einfache Textur)
+        const textureLoader = new THREE.TextureLoader();
+        const texture = textureLoader.load('textur.jpg'); // Deine Texturdatei hier angeben
+        const material = new THREE.MeshLambertMaterial({
+            color: 0x00ff00,   // Würfel Farbe
+            map: texture,      // Textur hinzufügen
+            flatShading: true   // Flache Schattierung verwenden
+        });
 
         // Würfel 1
         const cube1 = new THREE.Mesh(geometry, material);
