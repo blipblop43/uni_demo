@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <title>Schulkooperationen in AR</title>
+    <title>Mobile Medien Test</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,7 +12,6 @@
         body {
             margin: 0;
         }
-
         #overlay {
             position: fixed;
             top: 0;
@@ -27,7 +25,6 @@
             align-items: center;
             justify-content: center;
         }
-
         #titleText {
             font-size: 7vw;
             color: white;
@@ -35,16 +32,13 @@
             text-align: center;
             margin: -60% 10px 0;
         }
-
         #image {
             position: absolute;
             top: 90%;
             left: 50%;
             width: 60%;
             transform: translate(-50%, -50%);
-
-           }
-
+        }
         #arButton {
             position: absolute;
             color: white;
@@ -54,24 +48,21 @@
             font-family: 'Kode Mono', monospace;
             z-index: 1000;
         }
-
         .spinner {
-           position: absolute;
-           top: 55%;
-           width: 50px;
-           height: 50px;
-           border: 5px solid #f3f3f3;
-           border-top: 5px solid #3498db;
-           border-radius: 50%;
-           animation: spin 1s linear infinite;
+            position: absolute;
+            top: 55%;
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
-
         @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
-
 </head>
 <body>
 <div id="overlay">
@@ -84,80 +75,29 @@
     <div class="spinner" id="spinner"></div>
     <img id="image" src="hdm_logo_weiß.png">
 </div>
-
-
 <script type="module">
         import { ARButton } from 'https://unpkg.com/three@0.126.0/examples/jsm/webxr/ARButton.js';
-
         let camera, scene, renderer;
-        let meshes = [];
-
         init();
-        Promise.all([
-            loadTexture('image01.png'),
-            loadTexture('image02.png'),
-            loadTexture('image03.png'),
-            loadTexture('image04.png'),
-            loadTexture('image05.png')
-        ]).then(textures => {
-            initAR(textures);
-        });
-
+        initAR(); // Kein Laden von Texturen mehr
         function init() {
             const container = document.createElement('div');
             document.body.appendChild(container);
-
             scene = new THREE.Scene();
-
             camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 40);
-
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             renderer.setPixelRatio(window.devicePixelRatio);
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.xr.enabled = true;
             container.appendChild(renderer.domElement);
-
             var light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
             light.position.set(0.5, 1, 0.25);
             scene.add(light);
-
             window.addEventListener('resize', onWindowResize, false);
-
         }
 
-        function loadTexture(imageUrl) {
-            return new Promise((resolve, reject) => {
-                const textureLoader = new THREE.TextureLoader();
-                textureLoader.load(imageUrl, resolve, undefined, reject);
-            });
-        }
-
-        function initAR(textures) {
-            const radius = 10; // Radius um die Kamera
-            const numTextures = textures.length;
-            const angleIncrement = (2 * Math.PI) / numTextures;
-
-          /*  for (let i = 0; i < numTextures; i++) {
-                const texture = textures[i];
-                const aspectRatio = texture.image.width / texture.image.height;
-                const geometry = new THREE.PlaneGeometry(7, 7 / aspectRatio);
-
-                const material = new THREE.MeshStandardMaterial({ map: texture, transparent: true, opacity: 1.0, side: THREE.DoubleSide });
-
-                const angle = i * angleIncrement;
-                const x = radius * Math.cos(angle);
-                const z = radius * Math.sin(angle);
-
-                const mesh = new THREE.Mesh(geometry, material);
-                mesh.position.set(x, 0, z);
-
-                // Richtet die Vorderseite des Bildes zur Kamera aus
-                mesh.lookAt(0, 0, 0);
-
-                scene.add(mesh);
-                meshes.push(mesh);
-            } */
-
+        function initAR() {
+            // Einfache AR Szene mit einem Würfel
             const geometry = new THREE.BoxGeometry( 1, 1, 1 ); 
             const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} ); 
             const cube = new THREE.Mesh( geometry, material ); 
@@ -172,7 +112,6 @@
         function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
-
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
 
@@ -191,5 +130,5 @@
         }
     </script>
 </body>
-
 </html>
+
