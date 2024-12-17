@@ -106,12 +106,15 @@
     }
 
     function initAR() {
-        // Erstelle 3 Würfel mit schattiertem Material ohne Textur
+        // Erstelle 3 Würfel mit diffusem Material und Schattierung
         const geometry = new THREE.BoxGeometry(1, 1, 1);
 
-        // Material mit Schattierung (ohne Textur)
+        // Diffuses Material mit Textur (zum Beispiel eine einfache Textur)
+        const textureLoader = new THREE.TextureLoader();
+        const texture = textureLoader.load('path_to_your_texture.jpg'); // Deine Texturdatei hier angeben
         const material = new THREE.MeshLambertMaterial({
             color: 0x00ff00,   // Würfel Farbe
+            map: texture,      // Textur hinzufügen
             flatShading: true   // Flache Schattierung verwenden
         });
 
@@ -159,4 +162,5 @@
 </script>
 </body>
 </html>
+
 
