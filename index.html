@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css2?family=Kode+Mono:wght@400..700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r126/three.js" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/three@0.126.0/examples/js/loaders/GLTFLoader.js"></script>
@@ -78,7 +78,7 @@
     <img id="image" src="hdm_logo_weiß.png">
 </div>
 <script type="module">
-    let camera, scene, renderer, model;
+    let camera, scene, renderer, model, mixer;
 
     init();
     initAR(); // Kein Laden von Texturen mehr
@@ -104,9 +104,13 @@
     function initAR() {
         // Lade das 3D-Modell und ersetze den Würfel
         const loader = new THREE.GLTFLoader();
-        loader.load('https://threejs.org/examples/models/gltf/robot/Robot.glb', function(gltf) {
+        loader.load('https://threejs.org/examples/models/gltf/RobotExpressive/RobotExpressive.glb', function(gltf) {
             model = gltf.scene;
-            model.scale.set(0.1, 0.1, 0.1); // Skaliere das Modell nach Bedarf
+            mixer = new THREE.AnimationMixer(model);
+            gltf.animations.forEach((clip) => {
+                mixer.clipAction(clip).play();
+            });
+            model.scale.set(0.05, 0.05, 0.05); // Skaliere das Modell nach Bedarf
             model.position.set(0, -0.5, -1); // Positioniere es vor der Kamera
             scene.add(model);
         }, undefined, function(error) {
@@ -133,8 +137,8 @@
     }
 
     function render() {
-        if (model) {
-            // Animationen des Modells (falls vorhanden) können hier aktualisiert werden
+        if (mixer) {
+            mixer.update(0.01); // Update die Animation
         }
         renderer.render(scene, camera);
     }
@@ -147,4 +151,5 @@
 </script>
 </body>
 </html>
+
 
